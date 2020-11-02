@@ -19,6 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.2",
     "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0"
   },
