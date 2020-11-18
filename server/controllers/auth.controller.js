@@ -49,11 +49,16 @@ exports.addUser = async (req, res) => {
         }).then((token) => {
 
             const transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: {
                     user: 'dimno322@gmail.com',
                     pass: 'lnm5ro2hio'
                 },
+                tls: {
+                    rejectUnauthorized: false
+                }
                 debug: true,
             });
             //req.headers.host
