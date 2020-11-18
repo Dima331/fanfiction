@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { FormattedMessage } from 'react-intl'
 
 const thumbsContainer = {
     display: 'flex',
@@ -49,8 +50,17 @@ const baseStyle = {
     borderColor: '#ff1744'
   };
 
-export const ImgChapter = (props) => {
+export const ImgChapter = ({imageHandler, editImage}) => {
     const [files, setFiles] = useState([]);
+
+    useEffect(() => {
+        console.log(editImage)
+        if(editImage){
+          setFiles(editImage)
+        }
+        
+      }, [editImage])
+
     const { getRootProps, getInputProps, isDragActive,
         isDragAccept,
         isDragReject } = useDropzone({
@@ -66,6 +76,7 @@ export const ImgChapter = (props) => {
                 .then(commits => {
                     console.log(commits.data.link)
                     setFiles(commits.data.link)
+                    imageHandler(commits.data.link)
                 });
         },
         onDragEnter: () => {
@@ -74,7 +85,7 @@ export const ImgChapter = (props) => {
     });
 
     const style = useMemo(() => ({
-        ...'base',
+        ...baseStyle,
         ...(isDragActive ? activeStyle : {}),
         ...(isDragAccept ? acceptStyle : {}),
         ...(isDragReject ? rejectStyle : {})
@@ -95,7 +106,7 @@ export const ImgChapter = (props) => {
             </aside>
             <div {...getRootProps({style})}>
                 <input {...getInputProps()} />
-                <p>Drag 'n' drop some files here, or click to select files</p>
+                <p><FormattedMessage id='drag-zone'/></p>
             </div>
         </div>
     );

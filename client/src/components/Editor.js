@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo,useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ReactMarkdown from 'react-markdown'
 import { useDropzone } from 'react-dropzone';
-
+import { FormattedMessage } from 'react-intl'
 import { CloudArrowDown } from 'react-bootstrap-icons';
 import { Image } from 'react-bootstrap-icons';
 import { TypeH1 } from 'react-bootstrap-icons';
@@ -52,7 +52,7 @@ const baseStyle = {
   justifyContent: 'center',
 };
 
-export const Editor = () => {
+export const Editor = ({textHandler, editText, setStatusLoad}) => {
   const [value, setValue] = useState('');
   const [position, setPosition] = useState(0);
   const [navigation, setNavigation]= useState([
@@ -95,7 +95,14 @@ export const Editor = () => {
 
   const handleChange = (e) => {
     setValue(e.target.value)
+    textHandler(e.target.value)
   }
+
+  useEffect(() => {
+    if(editText){
+      setValue(editText)
+    }
+  }, [editText])
 
   const { getRootProps, 
     getInputProps, 
@@ -104,6 +111,7 @@ export const Editor = () => {
     isDragReject } = useDropzone({
       accept: 'image/*',
       onDrop: async (file) => {
+        setStatusLoad(true)
         await fetch('https://api.imgur.com/3/image', {
           method: 'POST',
           body: file[0],
@@ -116,7 +124,12 @@ export const Editor = () => {
               value.slice(0, position),
               `![](${commits.data.link})`,
               value.slice(position)].join(''))
+              textHandler([
+                value.slice(0, position),
+                `![](${commits.data.link})`,
+                value.slice(position)].join(''))
             setDowloadImage(false)
+            setStatusLoad(false)
           });
       },
     });
@@ -150,24 +163,26 @@ export const Editor = () => {
       `${symbol}`,
       value.slice(position)].join(''))
     nameRef.current.focus();
+    textHandler([
+      value.slice(0, position),
+      `${symbol}`,
+      value.slice(position)].join(''))
   };
 
   return (
     <Form.Group>
-      <Form.Label>chapter</Form.Label>
       <Form.Group>
         <Button
           variant="primary"
           onClick={changeTextHandler}>
-          {editor ? "View" : "Edit"}
+          {editor ? <FormattedMessage id='view'/>  : <FormattedMessage id='edit'/> }
         </Button>
       </Form.Group>
-
       <div className={editor ? 'editor' : 'hide'} >
         <ul className='nav-list'>
           {navigation && 
-            navigation.map((item) => (
-              <li className='nav-list__item'><Button
+            navigation.map((item, i) => (
+              <li key={i} className='nav-list__item'><Button
                variant="success"
                className="nav"
                onClick={() => addSymbol(item.symbols)}
@@ -191,7 +206,7 @@ export const Editor = () => {
         {dowloadImage && <div>
           <div {...getRootProps({ style })}>
             <input {...getInputProps()} />
-            <p>Drag 'n' drop some files here, or click to select files</p>
+            <p><FormattedMessage id='drag-zone'/></p>
           </div>
 
           <div className='close-img'>

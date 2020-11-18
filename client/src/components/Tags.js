@@ -7,13 +7,13 @@ export const Tags = ({ tagsInBase, newTags, currentTags }) => {
     
     useEffect(() => {
         if(currentTags){
-            setTags(currentTags)
+            setTags(currentTags) 
         }
-        
       }, [currentTags])
 
     useEffect(() => {
         let position = null;
+        
         tagsInBase.forEach((tagBase, i) => {
             tags.forEach(taglocal => {
                 if (tagBase.name === taglocal.name) {
@@ -32,6 +32,7 @@ export const Tags = ({ tagsInBase, newTags, currentTags }) => {
             tagsInBase.push(tags[i]);
         }
         const tagsDel = tags.slice(0);
+
         tagsDel.splice(i, 1);
         setTags([...tagsDel]);
         newTags([...tagsDel]);
@@ -48,14 +49,13 @@ export const Tags = ({ tagsInBase, newTags, currentTags }) => {
         if (num > 0) {
             return;
         }
-        console.log(tags)
         const tagsAdd = [].concat(tags, tag);
+
         setTags([...tagsAdd]);
         newTags([...tagsAdd]);
     }
 
     return (
-        
         <ReactTags
             ref={refContainer}
             tags={tags}
@@ -64,6 +64,7 @@ export const Tags = ({ tagsInBase, newTags, currentTags }) => {
             onAddition={onAddition}
             allowNew={true}
             allowBackspace={false}
+            placeholderText=' '
         />
     )
 }

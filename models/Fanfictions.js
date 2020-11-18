@@ -19,8 +19,13 @@ const Fanfictions = sequelize.define('fanfictions', {
         type: Sequelize.STRING,
         allowNull: true
     },
+    overall_rating: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
+        defaultValue: 0
+    },
 }, {
-    timestamps: false
+    timestamps: true
 });
 
 module.exports = Fanfictions

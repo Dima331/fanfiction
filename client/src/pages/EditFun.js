@@ -1,131 +1,165 @@
-import React, { useEffect, useState, useMemo, useCallback, } from 'react';
-import { useHttp } from '../hooks/http.hook'
-import { useParams, useHistory, Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Tags } from '../components/Tags'
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import { Loader } from '../components/Loader';
+import { useSelector, useDispatch } from 'react-redux';
+import { FormattedMessage } from 'react-intl'
+
+import {
+  getGenres,
+  getGenresLoading,
+  fetchGenresRequest
+} from '../modules/genres';
+
+import {
+  getTags,
+  getTagsLoading,
+  fetchTagsRequest,
+} from '../modules/tags';
+
+import {
+  fetchEditFanfictionRequest,
+  fetchChangeFanfictionRequest,
+  getEditFanfictionLoading,
+  getEditFanfiction,
+  getEditFanfictionError,
+  getChangeFanfiction
+} from '../modules/fanfictions';
+
+import {
+  loginUser,
+} from '../modules/users';
 
 export const EditFun = () => {
-  const { request, loading } = useHttp()
-  const linkId = useParams().id
   const history = useHistory();
-  const [AllTags, setAllTags] = useState([]);
-  const [genres, setGenres] = useState([])
-  const [baseTags, setBaseTags] = useState([])
-  const [form, setForm] = useState({
-     title: '', description: '', genre: '', tags: [], allTags: []
-  })
-  // const [form, setForm] = useState({})
-
-  const getFun = useCallback(async () => {
-    try {
-      const fetched = await request(`/api/fanfictions/edit/${linkId}`, 'GET', null)
-      setForm(fetched)
-      setBaseTags(fetched.allTags)
-    } catch (e) { }
-  }, [setForm, request])
-
-  const getGanres = useCallback(async () => {
-    try {
-      const data = await request('/api/genres', 'GET', null)
-      setGenres(data)
-    } catch (e) { }
-  }, [request])
-
-  useEffect(() => {
-    getFun()
-    getGanres()
-  }, [getFun, getGanres])
-
-  const newTags = (tags) => {
-    setForm( prev => ({
-      ...prev,
-      tags: tags
-    }))
-  }
+  const [form, setForm] = useState([]);
+  const linkId = useParams().id;
+  const dispatch = useDispatch();
+  const { baseTags, change, genres, loadTags, loadGenres, fanfiction, fanfictionLoading, token, error } = useSelector(state => ({
+    genres: getGenres(state),
+    token: loginUser(state),
+    baseTags: getTags(state),
+    loadTags: getTagsLoading(state),
+    loadGenres: getGenresLoading(state),
+    fanfiction: getEditFanfiction(state),
+    fanfictionLoading: getEditFanfictionLoading(state),
+    error: getEditFanfictionError(state),
+    change: getChangeFanfiction(state)
+  }));
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
 
-  const submitHandler = async (e) => {
-    e.preventDefault()
-      try {
-        form.id =  linkId
-        const data = await request('/api/fanfictions/change', 'POST', form)
-      } catch (e) { }
+  useEffect(() => {
+    if(error){
+      history.push(`/`);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    dispatch(fetchTagsRequest())
+    dispatch(fetchGenresRequest())
+    dispatch(fetchEditFanfictionRequest({token, linkId}))
+    setForm(fanfiction)
+  }, []);
+  
+  useEffect(() => {
+    setForm(fanfiction)
+    setForm(prev => ({
+      ...prev,
+      id: linkId
+    }))
+  }, [fanfiction]);
+
+  const newTags = (tags) => {
+    setForm(prev => ({
+      ...prev,
+      tags: tags
+    }))
   }
 
-  if (loading) {
-    return ('NI')
-  } 
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    dispatch(fetchChangeFanfictionRequest(form))
+    if(change){
+      history.push(`/view/${linkId}`);
+    }
+  }
+
+  if (loadTags || loadGenres || fanfictionLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
-    
     <div>
-      {linkId}
-      {form && 
-      <Row className='justify-content-md-center'>
-        <Col xs lg='6' className='mt-7'>
-          <Form
-            onSubmit={(e) => submitHandler(e)}
-          >
-            <Form.Group>
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                required
-                type="text"
-                name="title"
-                placeholder="Enter title"
-                value={form.title}
-                onChange={changeHandler}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                required
-                name='description'
-                value={form.description}
-                placeholder='Description'
-                onChange={changeHandler}
-                rows={3}
-                className='description'
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Janre</Form.Label>
-              <Form.Control
-                as="select"
-                value={form.genre}
-                name='genre'
-                onChange={changeHandler}>
-                {genres && genres.map((genre) => {
-                  return <option
-                    key={genre.id}
-                    value={genre.id}
-                    >{genre.name}</option>
-                })}
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Tags</Form.Label>
-              {baseTags && <Tags
-                tagsInBase={baseTags}
-                newTags={newTags}
-                currentTags={form.tags}
-              />}
-            </Form.Group>
-            <Button variant="primary" type="submit" className='mt-7'>
-              Submit
-          </Button>
-          </Form>
-        </Col>
-      </Row>
-    }
+      {fanfiction &&
+        <Row className='justify-content-md-center'>
+          <Col xs lg='6' className='mt-5'>
+            <Jumbotron>
+              <h2 className='display-4 list-fanfic__title mb-4'><FormattedMessage id='funfiction-edit-title'/></h2>
+              <Form
+                onSubmit={(e) => submitHandler(e)}>
+                <Form.Group>
+                  <Form.Label><FormattedMessage id='funfiction-title'/></Form.Label>
+                  <Form.Control
+                    required
+                    type="text"
+                    name="title"
+                    value={form.title || ""}
+                    onChange={changeHandler}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label><FormattedMessage id='funfiction-description'/></Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    required
+                    name='description'
+                    value={form.description}
+                    onChange={changeHandler}
+                    rows={3}
+                    className='description'
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label><FormattedMessage id='funfiction-genre'/></Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={form.genreId}
+                    name='genre'
+                    onChange={changeHandler}>
+                    {genres && genres.map((genre) => {
+                      return <option
+                        key={genre.id}
+                        value={genre.id}
+                      >{genre.name}</option>
+                    })}
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label><FormattedMessage id='funfiction-tags'/></Form.Label>
+                  {baseTags && <Tags
+                    tagsInBase={baseTags}
+                    newTags={newTags}
+                    currentTags={form.tags}
+                  />}
+                </Form.Group>
+                <Button variant="primary" type="submit" className='mt-5'>
+                <FormattedMessage id='edit'/>
+                </Button>
+              </Form>
+            </Jumbotron>
+          </Col>
+        </Row>
+      }
     </div>
   );
 }

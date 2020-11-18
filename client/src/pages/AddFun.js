@@ -1,140 +1,149 @@
-import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+import Jumbotron from 'react-bootstrap/Jumbotron';
 import Col from 'react-bootstrap/Col';
 import '../styles/styles.css';
-import { ImgChapter } from './ImgChapter'
-import { Tags } from '../components/Tags'
-import ReactMarkdown from 'react-markdown'
-import { useDropzone } from 'react-dropzone';
-import { Editor } from '../components/Editor'
-import { useHttp } from '../hooks/http.hook'
+import { Tags } from '../components/Tags';
+import { useSelector, useDispatch } from 'react-redux';
+import { Loader } from '../components/Loader';
+import {  useHistory } from 'react-router-dom'
+import {FormattedMessage} from 'react-intl'
 
+import {
+  getTags,
+  getTagsLoading,
+  fetchTagsRequest,
+} from '../modules/tags';
+import {
+  getGenres,
+  getGenresLoading,
+  fetchGenresRequest
+} from '../modules/genres';
+import {
+  fetchAddFanfictionRequest,
+  getAddFanfiction
+} from '../modules/fanfictions';
+
+import {
+  loginUser,
+} from '../modules/users';
 
 export const AddFun = () => {
-  const [AllTags, setAllTags] = useState([]);
-  const { request, loading } = useHttp()
-  const [genres, setGenres] = useState([])
-  const [baseTags, setBaseTags] = useState([])
-
-  const getGanres = useCallback(async () => {
-    try {
-      const data = await request('api/genres', 'GET', null)
-      setGenres(data)
-    } catch (e) { }
-  }, [request])
-
-  const getTags = useCallback(async () => {
-    try {
-      const data = await request('api/tags', 'GET', null)
-      setBaseTags(data)
-    } catch (e) { }
-  }, [request])
-
-  useEffect(() => {
-    getGanres()
-    getTags()
-  }, [getGanres, getTags])
-
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { baseTags, genres, loadTags, loadGenres, added, token } = useSelector(state => ({
+    genres: getGenres(state),
+    token: loginUser(state),
+    baseTags: getTags(state),
+    loadTags: getTagsLoading(state),
+    loadGenres: getGenresLoading(state),
+    added: getAddFanfiction(state),
+  }));
   const [form, setForm] = useState({
     title: '',
     description: '',
     genre: 1,
-    tags: []
+    tags: [],
   })
+
+  useEffect(() => {
+    dispatch(fetchTagsRequest())
+    dispatch(fetchGenresRequest())
+  }, []);
+
+  useEffect(() => {
+    if (added) {
+      history.push(`/view/${added.id}`);
+    }
+  }, [added]);
+
+  useEffect(() => {
+    setForm(prev => ({
+      ...prev,
+      userId: token.user.id
+    }))
+  }, [token]);
 
   const changeHandler = event => {
     setForm({ ...form, [event.target.name]: event.target.value })
   }
-  
+
   const newTags = (tags) => {
-    setForm( prev => ({
+    setForm(prev => ({
       ...prev,
       tags: tags
     }))
   }
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault()
-      try {
-        const data = await request('api/fanfictions/add', 'POST', form)
-      } catch (e) { }
+    dispatch(fetchAddFanfictionRequest({form, token}))
+  }
+
+  if (loadTags || loadGenres) {
+    return (
+      <Loader />
+    )
   }
 
   return (
     <Row className='justify-content-md-center'>
-      <Col xs lg='6' className='mt-7'>
-        <Form
-          onSubmit={(e) => submitHandler(e)}
-        >
-          <Form.Group>
-            <Form.Label>Title</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name="title"
-              placeholder="Enter title"
-              value={form.title}
-              onChange={changeHandler}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              required
-              name='description'
-              value={form.description}
-              placeholder='Description'
-              onChange={changeHandler}
-              rows={3}
-              className='description'
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Janre</Form.Label>
-            <Form.Control 
-              as="select"
-              value={form.genre}
-              name='genre'
-              onChange={changeHandler}>
+      <Col xs lg='6' className='mt-5'>
+        <Jumbotron>
+          <h2 className='display-4 list-fanfic__title mb-4'><FormattedMessage id='funfiction-new-add'/></h2>
+          <Form
+            onSubmit={(e) => submitHandler(e)}>
+            <Form.Group>
+              <Form.Label><FormattedMessage id='funfiction-title'/></Form.Label>
+              <Form.Control
+                required
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={changeHandler}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label><FormattedMessage id='funfiction-description'/></Form.Label>
+              <Form.Control
+                as="textarea"
+                required
+                name='description'
+                maxLength="250"
+                value={form.description}
+                onChange={changeHandler}
+                rows={3}
+                className='description'
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label><FormattedMessage id='funfiction-genre'/></Form.Label>
+              <Form.Control
+                as="select"
+                value={form.genre}
+                name='genre'
+                onChange={changeHandler}>
                 {genres && genres.map((genre) => {
-                  return <option 
-                    key={genre.id}  
+                  return <option
+                    key={genre.id}
                     value={genre.id}>{genre.name}</option>
                 })}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Tags</Form.Label>
-            {baseTags && <Tags
-              tagsInBase={baseTags}
-              newTags={newTags}
-            />}
-          </Form.Group>
-          {/* <Form.Group>
-            <Form.Label>Title chapter</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name="chapter"
-              placeholder="Enter title chapter"
-              value={form.chapter}
-              onChange={changeHandler}
-            />
-          </Form.Group> */}
-          {/* <Form.Group>
-            <Editor/>
-          </Form.Group> */}
-          {/* <Form.Group>
-            <Form.Label>Image chapter</Form.Label>
-            <ImgChapter />
-          </Form.Group> */}
-          <Button variant="primary" type="submit" className='mt-7'>
-            Submit
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label><FormattedMessage id='funfiction-tags'/></Form.Label>
+              {baseTags && <Tags
+                tagsInBase={baseTags}
+                newTags={newTags}
+              />}
+            </Form.Group>
+            <Button variant="primary" type="submit" className='mt-5'>
+            <FormattedMessage id='funfiction-add'/>
           </Button>
-        </Form>
+          </Form>
+        </Jumbotron>
       </Col>
     </Row>
   )
