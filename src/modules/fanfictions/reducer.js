@@ -250,7 +250,7 @@ const editFanfictionError = handleActions({
 const changeFanfiction = handleActions({
   [fetchChangeFanfictionRequest]: () => [],
   [fetchChangeFanfictionSuccess]: (_state, action) => action.payload,
-}, []);
+}, false);
 
 const changeFanfictionLoading = handleActions({
   [fetchChangeFanfictionRequest]: () => true,

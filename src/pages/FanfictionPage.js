@@ -28,7 +28,8 @@ import {
   fetchFanfictionRequest,
   getFanfictionError,
   addCommentsFanfiction,
-  getAddChapter
+  getAddChapter,
+  fetchChangeFanfictionSuccess
 } from '../modules/fanfictions';
 
 import {
@@ -48,6 +49,7 @@ export const FanfictionPage = () => {
     error: getFanfictionError(state),
     fanfictionLoading: getFanfictionLoading(state),
     token: loginUser(state),
+    // change: getChangeFanfiction(state),
   }));
 
   useEffect(() => {
@@ -64,6 +66,7 @@ export const FanfictionPage = () => {
   useEffect(() => {
     dispatch(fetchChaptersRequest(linkId))
     dispatch(fetchFanfictionRequest(linkId))
+    dispatch(fetchChangeFanfictionSuccess(false))
   }, [])
 
   useEffect(() => {

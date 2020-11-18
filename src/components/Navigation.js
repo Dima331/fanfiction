@@ -69,7 +69,7 @@ export const Navigation = ({ currentLocale, setCurrentLocale, setTheme, theme })
             <Button
               variant="success"
               onClick={handleStyle}
-            >Style
+            ><FormattedMessage id='style' />
             </Button>
           </Col>
         </div>

@@ -57,6 +57,12 @@ export const EditFun = () => {
   }
 
   useEffect(() => {
+    if(change){
+      history.push(`/view/${linkId}`);
+    }
+  }, [change]);
+
+  useEffect(() => {
     if(error){
       history.push(`/`);
     }
@@ -66,10 +72,10 @@ export const EditFun = () => {
     dispatch(fetchTagsRequest())
     dispatch(fetchGenresRequest())
     dispatch(fetchEditFanfictionRequest({token, linkId}))
-    setForm(fanfiction)
   }, []);
-  
+
   useEffect(() => {
+    console.log(fanfiction)
     setForm(fanfiction)
     setForm(prev => ({
       ...prev,
@@ -87,9 +93,6 @@ export const EditFun = () => {
   const submitHandler = async (e) => {
     e.preventDefault()
     dispatch(fetchChangeFanfictionRequest(form))
-    if(change){
-      history.push(`/view/${linkId}`);
-    }
   }
 
   if (loadTags || loadGenres || fanfictionLoading) {
@@ -133,7 +136,7 @@ export const EditFun = () => {
                   <Form.Label><FormattedMessage id='funfiction-genre'/></Form.Label>
                   <Form.Control
                     as="select"
-                    value={form.genreId}
+                    value={form.genre}
                     name='genre'
                     onChange={changeHandler}>
                     {genres && genres.map((genre) => {
