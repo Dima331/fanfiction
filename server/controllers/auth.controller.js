@@ -59,7 +59,6 @@ exports.addUser = async (req, res) => {
                 tls: {
                     rejectUnauthorized: false
                 }
-                debug: true,
             });
             //req.headers.host
             const mailOptions = {
