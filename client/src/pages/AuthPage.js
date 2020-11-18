@@ -1,18 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react';
-// import { AuthContext } from '../context/Auth.context';
-// import { useHttp } from '../hooks/http.hook';
+import React, { useState,  useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
-import Rating  from 'react-rating';
-import { Star } from 'react-bootstrap-icons';
-import { StarFill } from 'react-bootstrap-icons';
-import {IntlProvider, FormattedMessage, FormattedNumber} from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useHistory, Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import {
   fetchLoginUserRequest,
   loginUserError,
@@ -82,10 +77,13 @@ export const AuthPage = () => {
               <Button
                 variant='primary'
                 type='submit'><FormattedMessage id='nav-auth'/>
-                </Button>
+              </Button>
             </Form>
           </Card.Body>
         </Card>
+        <p>admin</p>
+        <p>login: 123</p>
+        <p>pass: 123</p>
       </Col>
     </Row>
   )
