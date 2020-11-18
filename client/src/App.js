@@ -31,7 +31,7 @@ function App() {
   }, [])
 
   return (
-    <div className={!theme ? 'black': 'light'}>
+    <div className={!theme ? 'light' : 'black'}>
       <div className="bg-all pb-5">
     {/* <div> */}
     <IntlProvider
