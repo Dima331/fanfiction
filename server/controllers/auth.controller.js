@@ -49,16 +49,12 @@ exports.addUser = async (req, res) => {
         }).then((token) => {
 
             const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true,
-                auth: {	              
-                    user: 'dimno322@gmail.com',	                
-                    pass: 'lnm5ro2hio'	                  
-                },	          
-                tls: {
-                    rejectUnauthorized: false
-                }
+                service: 'gmail',
+                auth: {
+                    user: 'dimno322@gmail.com',
+                    pass: 'lnm5ro2hio'
+                },
+                debug: true,
             });
             //req.headers.host
             const mailOptions = {
@@ -107,16 +103,17 @@ exports.editUser = async (req, res) => {
             message: "Error validashion"
         })
     }
-
+    console.log(req.body)
     Users.update(
-        { login: req.body.login,
+        {   
+            login: req.body.login,
             email: req.body.email,
             name: req.body.name,
             city: req.body.city 
         },
         {
             where: { id: req.body.id }
-          }
+        }
     )
     return res.json(req.body);
 }

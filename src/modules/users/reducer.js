@@ -322,15 +322,16 @@ const loginUser = handleActions(
 
       return null
     },
-    // [fetchEditUserSuccess]: (_state, action) => {
-    //   _state.user = action.payload
+    [fetchEditUserSuccess]: (_state, action) => {
+      if(_state.user.id === action.payload.id){
+           _state.user = action.payload
+           localStorage.setItem('userData', JSON.stringify({
+           user: action.payload, token: _state.token,
+        }))
+      }
 
-    //   localStorage.setItem('userData', JSON.stringify({
-    //     user: action.payload, token: _state.token,
-    //   }))
-
-    //   return _state
-    // },
+      return _state
+    },
     [fetchChangeUserSuccess]: (_state, action) => {
       const { token, user } = action.payload
 

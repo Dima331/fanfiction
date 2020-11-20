@@ -29,7 +29,8 @@ import {
   getFanfictionError,
   addCommentsFanfiction,
   getAddChapter,
-  fetchChangeFanfictionSuccess
+  fetchChangeFanfictionSuccess,
+  getChangeFanfiction
 } from '../modules/fanfictions';
 
 import {
@@ -42,14 +43,14 @@ export const FanfictionPage = () => {
   const history = useHistory();
   const linkId = useParams().id;
   const dispatch = useDispatch();
-  const { chapters, chaptersLoading, fanfiction, fanfictionLoading, error, token } = useSelector(state => ({
+  const { chapters, chaptersLoading, fanfiction, fanfictionLoading, error, token, change } = useSelector(state => ({
     chapters: getChapters(state),
     chaptersLoading: getChaptersLoading(state),
     fanfiction: getFanfiction(state),
     error: getFanfictionError(state),
     fanfictionLoading: getFanfictionLoading(state),
     token: loginUser(state),
-    // change: getChangeFanfiction(state),
+    change: getChangeFanfiction(state),
   }));
 
   useEffect(() => {
@@ -63,10 +64,15 @@ export const FanfictionPage = () => {
     dispatch(addCommentsFanfiction({ comment: room.comment, user }))
   }
 
+  // useEffect(() => {
+  //   if(change){
+  //     dispatch(fetchFanfictionRequest(linkId))
+  //   }
+  // }, [change])
+
   useEffect(() => {
     dispatch(fetchChaptersRequest(linkId))
     dispatch(fetchFanfictionRequest(linkId))
-    dispatch(fetchChangeFanfictionSuccess(false))
   }, [])
 
   useEffect(() => {

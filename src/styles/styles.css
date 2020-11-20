@@ -411,18 +411,6 @@ blockquote {
   min-width: 20px;
 }
 
-.black {
-  filter: invert(100%)
-}
-.black img{
-  filter: invert(100%)
-}
-.black option{
-  background-color: black;
-  color: #fff;
-}
-/* filter: invert(100%) */
-
 .user-name{
   color: #fff;
 }
@@ -557,3 +545,54 @@ blockquote {
     background-color: white;
     min-height: 100vh;
   }
+
+  .black {
+    filter: invert(100%)
+  }
+  .black img{
+    filter: invert(100%)
+  }
+  .black option{
+    background-color: black;
+    color: #fff;
+  }
+  /* filter: invert(100%) */
+
+  .black .bg-primary {
+    background-color: #8c74ba!important;
+  }
+
+  .black .btn-success {
+    color: #fff;
+    background-color: #455a49;
+    border-color: #5f42ab;
+}
+
+.black .aside {
+  background-color: #7b9094;
+}
+
+.black .card {
+
+  background-color: #87c5b6;
+
+}
+
+.black .jumbotron{
+  background-color: #a3a6b3;
+}
+
+.black .alert-light {
+  color: #000;
+  background-color: #fefefe;
+  border-color: #fdfdfe;
+}
+
+.black .table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #000000;
+}
+
+.black .table-bordered td, .black .table-bordered th {
+  border: 1px solid #000000;
+}

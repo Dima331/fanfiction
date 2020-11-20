@@ -28,7 +28,8 @@ import {
   getEditFanfictionLoading,
   getEditFanfiction,
   getEditFanfictionError,
-  getChangeFanfiction
+  getChangeFanfiction,
+  fetchFanfictionRequest
 } from '../modules/fanfictions';
 
 import {
@@ -57,7 +58,9 @@ export const EditFun = () => {
   }
 
   useEffect(() => {
+    // console.log(change , form)
     if(change){
+      dispatch(fetchFanfictionRequest(linkId))
       history.push(`/view/${linkId}`);
     }
   }, [change]);

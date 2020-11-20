@@ -39,6 +39,9 @@ export const ProfilePage = () => {
     const editHandler = async (e) => {
       e.preventDefault();
      dispatch(fetchEditUserRequest(form))
+     if(!userId){
+       
+     }
     }
 
     useEffect(() => {
