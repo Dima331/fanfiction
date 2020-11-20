@@ -103,16 +103,17 @@ exports.editUser = async (req, res) => {
             message: "Error validashion"
         })
     }
-
+    console.log(req.body)
     Users.update(
-        { login: req.body.login,
+        {   
+            login: req.body.login,
             email: req.body.email,
             name: req.body.name,
             city: req.body.city 
         },
         {
             where: { id: req.body.id }
-          }
+        }
     )
     return res.json(req.body);
 }

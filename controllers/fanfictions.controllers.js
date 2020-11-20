@@ -88,10 +88,13 @@ exports.getFanfiction = (req, res) => {
         include: [Tags]
       })
       .then((tags) => {
+        console.log(tags)
         for (tag of tags) {
-          finalData.tags.push(tag.dataValues.tag.dataValues);
+          if(tag.dataValues.tag.dataValues){
+            finalData.tags.push(tag.dataValues.tag.dataValues);
+          }
         }
-
+        console.log(finalData)
         return res.send(finalData);
       })
     }).catch(err => console.log(err));
@@ -229,45 +232,46 @@ exports.editFanfictions = async (req, res) => {
     }).catch(err => console.log(err));
 }
 
-exports.changeFanfictions = (req, res) => {
-  Fanfictions.update(
+exports.changeFanfictions = async (req, res) => {
+  await Fanfictions.update(
     {
       title: req.body.title,
       description: req.body.description,
       genreId: +req.body.genre,
     },
     { where: { id: +req.body.id } })
-    .then(() => {
-      FanfictionToTag.destroy({ where: { fanfictionId: +req.body.id } })
-      .then(() => {
-        Fanfictions.findOne({ where: { id: +req.body.id } })
-        .then((fanfiction) => {
+    .then(async () => {
+      await FanfictionToTag.destroy({ where: { fanfictionId: +req.body.id } })
+      .then(async () => {
+        await Fanfictions.findOne({ where: { id: +req.body.id } })
+        .then(async(fanfiction) => {
           const fanfictionId = fanfiction.id;
 
           for (let val of req.body.tags) {
-            FanfictionToTag.create({
+            await FanfictionToTag.create({
               fanfictionId: fanfictionId
-            }).then((data) => {
+            }).then(async(data) => {
               const compId = data.id;
 
               if (val.id) {
-                Tags.findOne({ where: { id: val.id } })
-                .then(tag => {
+                await Tags.findOne({ where: { id: val.id } })
+                .then(async tag => {
                   const tagId = tag.id;
 
-                  FanfictionToTag.update({ tagId: tagId }, {
+                  await FanfictionToTag.update({ tagId: tagId }, {
                     where: { id: compId }
                   })
                 })
               } else {
-                Tags.create({
+                await Tags.create({
                   name: val.name
                 })
-                .then(data => {
+                .then(async data => {
                   const tagId = data.id;
 
-                  FanfictionToTag.update({ tagId: tagId }, {
+                  await FanfictionToTag.update({ tagId: tagId }, {
                     where: { id: compId }
+                  }).then(() => {
                   })
                 }).catch(err => console.log(err));
               }
@@ -275,9 +279,8 @@ exports.changeFanfictions = (req, res) => {
           }
         })
       }).catch(err => console.log(err));
-      return res.json({ message: 'added' });
     }).catch(err => console.log(err));
-
+    return res.json({ message: 'changed' });
 }
 
 exports.userFanfictions = (req, res) => {

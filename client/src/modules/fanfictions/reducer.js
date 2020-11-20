@@ -199,7 +199,14 @@ const fanfictionsError = handleActions({
 
 const fanfiction = handleActions({
   [fetchFanfictionRequest]: () => [],
-  [fetchFanfictionSuccess]: (_state, action) => action.payload,
+  [fetchFanfictionSuccess]: (_state, action) => {
+    console.log(action.payload)
+    return action.payload},
+
+  // [fetchChangeFanfictionSuccess]: (_state, action) => {
+  //   console.log(action.payload)
+  //   return false},
+
 }, []);
 
 const fanfictionLoading = handleActions({
@@ -248,8 +255,10 @@ const editFanfictionError = handleActions({
 }, null);
 
 const changeFanfiction = handleActions({
-  [fetchChangeFanfictionRequest]: () => [],
-  [fetchChangeFanfictionSuccess]: (_state, action) => action.payload,
+  [fetchChangeFanfictionRequest]: () => false,
+  [fetchChangeFanfictionSuccess]: (_state, action) => {
+    console.log(action.payload)
+    return action.payload},
 }, false);
 
 const changeFanfictionLoading = handleActions({

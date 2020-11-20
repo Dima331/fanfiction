@@ -27,13 +27,13 @@ export const ToolBar = ({userId, status, role}) => {
         <Row className="justify-content-md-center">
             <Col className="d-flex">
             <Button
-                variant="light"
+                variant="primary"
                 onClick={()=> dispatch(fetchAdminUserRequest(userId))}
                 style={{ marginRight: '10px'}}
                 className='btn-toolbar'
                 >{!!+role 
-                    ? <FilePersonFill color="teal" size={20} /> 
-                    : <FilePerson color="teal" size={20}/>}
+                    ? <FilePersonFill color="#fff" size={20} /> 
+                    : <FilePerson color="#fff" size={20}/>}
                 </Button>
                   <Button
                     variant="primary"
@@ -41,8 +41,8 @@ export const ToolBar = ({userId, status, role}) => {
                     onClick={()=> dispatch(fetchBlockUserRequest(userId))}
                     className='btn-toolbar'
                 >{!!+status 
-                    ? <ShieldFillCheck color="yellow" size={20} /> 
-                    : <ShieldFillX color="yellow" size={20}/>}
+                    ? <ShieldFillCheck color="#fff" size={20} /> 
+                    : <ShieldFillX color="#fff" size={20}/>}
                 </Button>
                 <Button
                     variant="primary"
